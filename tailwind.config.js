@@ -8,10 +8,12 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        'gradient-conic': 'conic-gradient(var(--tw-gradient-stops))',
       },
       keyframes: {
         shine: {
@@ -49,11 +51,13 @@ module.exports = {
         float: 'float 6s ease-in-out infinite',
         pulse: 'pulse 2s ease-in-out infinite',
         wiggle: 'wiggle 1s ease-in-out infinite',
-        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce-slow': 'bounce 5s infinite',
         'shine': 'shine 5s infinite',
         'float-delayed': 'float 7s ease-in-out 2s infinite',
         'border-rotate': 'border-rotate 8s linear infinite',
+        'spin-slow': 'spin 15s linear infinite',
+        'spin-slower': 'spin 20s linear infinite reverse',
       },
     },
   },

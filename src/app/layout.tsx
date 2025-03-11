@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from './providers';
+import Navbar from '@/components/Navbar';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,11 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark scroll-smooth">
       <body className={`${inter.className} bg-gray-900 text-gray-100`}>
         <Providers>
+          <Navbar />
           <main className="relative z-1 min-h-screen w-full overflow-x-hidden">
-            {children}
+            <div className="max-w-[1920px] mx-auto">
+              {children}
+            </div>
           </main>
         </Providers>
       </body>

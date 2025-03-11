@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      <main className="container mx-auto px-4 py-8 pt-24 sm:pt-28 pb-24">
+      <main className="pt-16 sm:pt-20"> {/* Only keep padding-top for navbar clearance */}
         <Hero />
         <About id="about" />
         <Skills />
@@ -19,7 +19,6 @@ export default function Home() {
         <Contact id="contact" />
       </main>
       <Footer />
-      <DockNavigation />
     </div>
   );
 }
