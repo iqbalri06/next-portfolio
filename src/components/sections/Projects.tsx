@@ -39,10 +39,10 @@ export default function Projects({ id }: ProjectsProps) {
       titleKey: 'project1.title',
       descriptionKey: 'project1.description',
       image: waImage,
-      icon: <FaWhatsapp className="text-green-500" size={24} />,
+      icon: <FaWhatsapp className="text-emerald-400" size={24} />,
       tags: ['Node.js', 'WhatsApp API', 'Automation'],
       github: 'https://github.com/iqbalri06/bot_wa',
-      color: 'from-green-500 to-emerald-700',
+      color: 'from-emerald-400 to-teal-600',
       highlightKeys: [
         'project1.highlight1',
         'project1.highlight2',
@@ -119,25 +119,35 @@ export default function Projects({ id }: ProjectsProps) {
   const cardVariants = {
     initial: { 
       opacity: 0,
-      y: 20,
-      scale: 0.95
+      y: 40,
+      scale: 0.9,
+      rotateX: 5
     },
     animate: { 
       opacity: 1, 
       y: 0,
       scale: 1,
+      rotateX: 0,
       transition: { 
-        duration: 0.7,
+        duration: 0.8,
         ease: [0.22, 1, 0.36, 1]
       }
     },
     exit: {
       opacity: 0,
-      y: -20,
-      scale: 0.95,
+      y: -40,
+      scale: 0.9,
+      rotateX: -5,
       transition: { 
-        duration: 0.5,
+        duration: 0.6,
         ease: [0.22, 1, 0.36, 1]
+      }
+    },
+    hover: {
+      y: -10,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
       }
     }
   };
@@ -146,24 +156,65 @@ export default function Projects({ id }: ProjectsProps) {
     <button
       key={index}
       onClick={() => setActiveProject(index)}
-      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+      className={`relative w-3 h-3 rounded-full transition-all duration-500 ${
         activeProject === index 
-          ? `bg-gradient-to-r ${projects[index].color} w-6`
-          : 'bg-gray-300 dark:bg-gray-600'
+          ? `bg-gradient-to-r ${projects[index].color} w-8 shadow-lg shadow-${projects[index].color.split('-')[1]}/40`
+          : 'bg-gray-400/30 dark:bg-gray-600/50'
       }`}
       aria-label={`Go to project ${index + 1}`}
-    />
+    >
+      {activeProject === index && (
+        <span className="absolute inset-0 rounded-full animate-ping bg-white opacity-75"></span>
+      )}
+    </button>
   );
+
+  // Create a starry background
+  const renderStars = () => {
+    return Array.from({ length: 50 }).map((_, i) => {
+      const size = Math.random() * 2 + 1;
+      const top = `${Math.random() * 100}%`;
+      const left = `${Math.random() * 100}%`;
+      const animationDelay = `${Math.random() * 5}s`;
+      
+      return (
+        <div 
+          key={i}
+          className="absolute rounded-full bg-white dark:bg-blue-100"
+          style={{
+            top,
+            left,
+            width: size,
+            height: size,
+            opacity: Math.random() * 0.7 + 0.3,
+            animation: `twinkle 4s infinite ${animationDelay}`
+          }}
+        />
+      );
+    });
+  };
 
   return (
     <div 
       id={id} 
-      className="py-24 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
+      className="py-32 relative overflow-hidden bg-gradient-to-b from-indigo-950 via-purple-950 to-black"
       ref={containerRef}
     >
-      {/* Background elements */}
-      <div className="absolute top-0 left-1/4 -z-10 w-72 h-72 bg-gradient-to-b from-purple-300/10 to-pink-300/10 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-40 right-1/4 -z-10 w-64 h-64 bg-gradient-to-tr from-blue-300/10 to-cyan-300/10 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-full blur-3xl"></div>
+      {/* Space-themed background elements */}
+      <div className="stars-container absolute inset-0 -z-10 opacity-70">
+        {renderStars()}
+      </div>
+      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[radial-gradient(ellipse_at_center,rgba(100,90,255,0.15),transparent_70%)]"></div>
+      <div className="absolute -top-20 right-1/3 -z-10 w-96 h-96 rounded-full blur-[120px] bg-blue-600/20"></div>
+      <div className="absolute top-1/3 left-1/4 -z-10 w-80 h-80 rounded-full blur-[100px] bg-purple-600/20"></div>
+      <div className="absolute bottom-20 right-1/4 -z-10 w-64 h-64 rounded-full blur-[80px] bg-indigo-600/20"></div>
+      
+      {/* Planet decorative element */}
+      <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-gradient-to-br from-purple-800/30 to-indigo-600/30 blur-sm border border-purple-500/20"></div>
+      
+      {/* Orbital line */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] border-2 border-purple-500/5 rounded-full -z-10 rotate-12"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[80%] border border-blue-500/10 rounded-full -z-10 -rotate-12"></div>
       
       <motion.div 
         style={{ opacity, y }}
@@ -174,33 +225,41 @@ export default function Projects({ id }: ProjectsProps) {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="mb-16 text-center"
+          className="mb-20 text-center"
         >
-          <h2 className="text-4xl font-bold mb-3 text-gray-900 dark:text-white">
-            {t('projects.title')}
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-6"></div>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <div className="flex justify-center items-center mb-3">
+            <div className="w-4 h-4 rounded-full bg-blue-400 shadow-lg shadow-blue-500/50 mr-3"></div>
+            <h2 className="text-5xl font-bold text-white tracking-tight">
+              {t('projects.title')}
+            </h2>
+            <div className="w-4 h-4 rounded-full bg-purple-400 shadow-lg shadow-purple-500/50 ml-3"></div>
+          </div>
+          <div className="w-28 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto mb-8 rounded-full"></div>
+          <p className="text-blue-100 max-w-2xl mx-auto text-lg opacity-80">
             {t('projects.subtitle')}
           </p>
         </motion.div>
 
         {/* Large screens - Showcase layout */}
         <div className="hidden lg:block">
-          <div className="grid grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-2 gap-16 items-center">
             {/* Left side - Project Image */}
-            <div className="relative h-[500px] w-full">
+            <div className="relative h-[500px] w-full perspective-1000">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={projects[activeProject].id}
                   initial="initial"
                   animate="animate"
                   exit="exit"
+                  whileHover="hover"
                   variants={cardVariants}
                   className="absolute inset-0 w-full h-full"
                 >
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${projects[activeProject].color} opacity-20 blur-md -m-2`} />
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
+                  <div className={`absolute -inset-1 rounded-2xl bg-gradient-to-br ${projects[activeProject].color} opacity-70 blur-md transform -rotate-2`} />
+                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 opacity-90"></div>
+                  <div className="absolute inset-px rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 backdrop-blur"></div>
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-purple-500/20 backdrop-blur-xl transform rotate-1">
+                    <div className="absolute inset-0 bg-black/40 z-10"></div>
                     <Image
                       src={projects[activeProject].image}
                       alt={t(projects[activeProject].titleKey)}
@@ -209,30 +268,40 @@ export default function Projects({ id }: ProjectsProps) {
                       sizes="(max-width: 768px) 100vw, 50vw"
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end z-20">
                       <div className="p-8 w-full">
-                        <motion.h3 
+                        <motion.div 
                           initial={{ opacity: 0, y: 10 }} 
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="text-3xl font-bold text-white mb-2"
+                          transition={{ delay: 0.3 }}
+                          className="flex items-center gap-3 mb-3"
                         >
-                          {t(projects[activeProject].titleKey)}
-                        </motion.h3>
+                          <div className={`p-2 rounded-lg bg-slate-800/80 backdrop-blur-sm ring-1 ring-white/20`}>
+                            {projects[activeProject].icon}
+                          </div>
+                          <h3 className="text-3xl font-bold text-white">
+                            {t(projects[activeProject].titleKey)}
+                          </h3>
+                        </motion.div>
                         <div className="flex flex-wrap gap-2 mb-3">
                           {projects[activeProject].tags.map((tag) => (
                             <motion.span 
                               key={tag}
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.3 }}
-                              className="px-2.5 py-0.5 text-sm font-medium bg-white/20 text-white rounded-full backdrop-blur-sm"
+                              transition={{ delay: 0.4 }}
+                              className="px-3 py-1 text-sm font-medium bg-slate-700/50 text-blue-200 rounded-full backdrop-blur-sm border border-slate-600/50"
                             >
                               {tag}
                             </motion.span>
                           ))}
                         </div>
                       </div>
+                    </div>
+                    <div className="absolute top-4 right-4 z-30 flex space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/50"></div>
                     </div>
                   </div>
                 </motion.div>
@@ -248,33 +317,40 @@ export default function Projects({ id }: ProjectsProps) {
                   animate="animate"
                   exit="exit"
                   variants={cardVariants}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700"
+                  className="backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl bg-slate-900/50 overflow-hidden relative"
                 >
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700">
+                  <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                  <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
+                  <div className={`absolute -right-20 -top-20 w-40 h-40 rounded-full bg-gradient-to-br ${projects[activeProject].color} opacity-30 blur-3xl`}></div>
+
+                  <div className="flex items-center space-x-3 mb-7">
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${projects[activeProject].color} bg-opacity-10`}>
                       {projects[activeProject].icon}
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-2xl font-bold text-white">
                       {t(projects[activeProject].titleKey)}
                     </h3>
                   </div>
                   
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  <p className="text-blue-100/80 mb-8 leading-relaxed">
                     {t(projects[activeProject].descriptionKey)}
                   </p>
                   
-                  <div className="mb-6">
-                    <h4 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">Key Features</h4>
-                    <ul className="space-y-2">
+                  <div className="mb-8">
+                    <div className="inline-flex items-center mb-4 space-x-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                      <h4 className="text-lg font-semibold text-blue-200">Key Features</h4>
+                    </div>
+                    <ul className="space-y-3">
                       {projects[activeProject].highlightKeys.map((highlightKey, index) => (
                         <motion.li 
                           key={index}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.2 + index * 0.1 }}
-                          className="flex items-center text-gray-700 dark:text-gray-300"
+                          transition={{ delay: 0.3 + index * 0.1 }}
+                          className="flex items-start text-blue-50/90"
                         >
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 mr-3 mt-2"></div>
                           {t(highlightKey)}
                         </motion.li>
                       ))}
@@ -286,7 +362,7 @@ export default function Projects({ id }: ProjectsProps) {
                       href={projects[activeProject].github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-5 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-white rounded-lg transition-all hover:scale-105 border border-slate-700/50"
                     >
                       <FaGithub /> View Code
                     </a>
@@ -295,7 +371,7 @@ export default function Projects({ id }: ProjectsProps) {
                         href={projects[activeProject].demo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${projects[activeProject].color} text-white rounded-lg transition-transform hover:scale-105`}
+                        className={`flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${projects[activeProject].color} text-white rounded-lg transition-all hover:scale-105 shadow-lg`}
                       >
                         <FaExternalLinkAlt /> Live Demo
                       </a>
@@ -307,42 +383,46 @@ export default function Projects({ id }: ProjectsProps) {
           </div>
           
           {/* Project navigation */}
-          <div className="mt-12 flex justify-between items-center">
+          <div className="mt-16 flex justify-between items-center">
             <button 
               onClick={prevProject}
-              className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-colors group"
               aria-label="Previous project"
             >
-              <HiChevronLeft className="text-2xl text-gray-700 dark:text-gray-300" />
+              <HiChevronLeft className="text-2xl text-white group-hover:text-blue-300 transition-colors" />
             </button>
             
-            <div className="flex space-x-2">
+            <div className="flex space-x-3 bg-slate-800/30 px-6 py-3 rounded-full backdrop-blur-sm border border-slate-700/30">
               {projects.map((_, index) => projectIndicator(index))}
             </div>
             
             <button 
               onClick={nextProject}
-              className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-colors group"
               aria-label="Next project"
             >
-              <HiChevronRight className="text-2xl text-gray-700 dark:text-gray-300" />
+              <HiChevronRight className="text-2xl text-white group-hover:text-blue-300 transition-colors" />
             </button>
           </div>
         </div>
         
         {/* Mobile and tablet layout */}
-        <div className="lg:hidden space-y-10">
+        <div className="lg:hidden space-y-14">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700"
+              transition={{ duration: 0.8, delay: index * 0.1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              className="backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl bg-slate-900/40 relative"
             >
-              <div className="relative h-64 w-full">
-                <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-30 z-10`} />
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+              <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
+              <div className={`absolute -left-20 -top-20 w-40 h-40 rounded-full bg-gradient-to-br ${project.color} opacity-20 blur-3xl`}></div>
+              
+              <div className="relative h-72 w-full">
+                <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-20 z-10`} />
                 <Image
                   src={project.image}
                   alt={t(project.titleKey)}
@@ -350,10 +430,10 @@ export default function Projects({ id }: ProjectsProps) {
                   className="object-cover"
                   sizes="100vw"
                 />
-                <div className="absolute inset-0 bg-black/30 flex items-end z-20">
-                  <div className="p-6 w-full">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="p-1.5 bg-white/30 backdrop-blur-sm rounded-md">
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-transparent flex items-start pt-8 z-20">
+                  <div className="px-6 w-full">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 rounded-lg bg-slate-800/60 backdrop-blur-sm">
                         {project.icon}
                       </div>
                       <h3 className="text-2xl font-bold text-white">
@@ -364,7 +444,7 @@ export default function Projects({ id }: ProjectsProps) {
                       {project.tags.map((tag) => (
                         <span 
                           key={tag}
-                          className="px-2 py-0.5 text-xs font-medium bg-white/20 text-white rounded-full backdrop-blur-sm"
+                          className="px-2.5 py-1 text-xs font-medium bg-slate-800/50 text-blue-200 rounded-full backdrop-blur-sm border border-slate-700/50"
                         >
                           {tag}
                         </span>
@@ -372,22 +452,30 @@ export default function Projects({ id }: ProjectsProps) {
                     </div>
                   </div>
                 </div>
+                <div className="absolute top-3 right-3 z-30 flex space-x-1.5">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></div>
+                  <div className="w-2 h-2 rounded-full bg-yellow-500 shadow-sm shadow-yellow-500/50"></div>
+                  <div className="w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-500/50"></div>
+                </div>
               </div>
               
               <div className="p-6">
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                <p className="text-blue-100/80 mb-6 leading-relaxed">
                   {t(project.descriptionKey)}
                 </p>
                 
                 <div className="mb-6">
-                  <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Key Features</h4>
-                  <ul className="space-y-1">
+                  <div className="inline-flex items-center mb-3 space-x-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                    <h4 className="text-lg font-semibold text-blue-200">Key Features</h4>
+                  </div>
+                  <ul className="space-y-2">
                     {project.highlightKeys.slice(0, 3).map((highlightKey, idx) => (
                       <li 
                         key={idx}
-                        className="flex items-center text-sm text-gray-700 dark:text-gray-300"
+                        className="flex items-start text-sm text-blue-100/80"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 mr-2 mt-1.5"></div>
                         {t(highlightKey)}
                       </li>
                     ))}
@@ -399,7 +487,7 @@ export default function Projects({ id }: ProjectsProps) {
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg text-sm transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-800/70 hover:bg-slate-700/70 text-white rounded-lg text-sm transition-all hover:scale-105 border border-slate-700/50"
                   >
                     <FaGithub size={14} /> Code
                   </a>
@@ -408,7 +496,7 @@ export default function Projects({ id }: ProjectsProps) {
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r ${project.color} text-white rounded-lg text-sm`}
+                      className={`flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r ${project.color} text-white rounded-lg text-sm shadow-md transition-all hover:scale-105`}
                     >
                       <FaExternalLinkAlt size={14} /> Demo
                     </a>
@@ -419,6 +507,17 @@ export default function Projects({ id }: ProjectsProps) {
           ))}
         </div>
       </motion.div>
+
+      {/* Add a global style for the twinkling stars animation */}
+      <style jsx global>{`
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 1; }
+        }
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+      `}</style>
     </div>
   );
 }
