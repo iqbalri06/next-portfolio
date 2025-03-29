@@ -229,7 +229,7 @@ export default function Projects({ id }: ProjectsProps) {
         >
           <div className="flex justify-center items-center mb-3">
             <div className="w-4 h-4 rounded-full bg-blue-400 shadow-lg shadow-blue-500/50 mr-3"></div>
-            <h2 className="text-5xl font-bold text-white tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
               {t('projects.title')}
             </h2>
             <div className="w-4 h-4 rounded-full bg-purple-400 shadow-lg shadow-purple-500/50 ml-3"></div>
