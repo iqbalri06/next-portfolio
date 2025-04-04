@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Image, { StaticImageData } from 'next/image';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useDragControls } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt, FaRobot, FaPython, FaReact, FaWhatsapp } from 'react-icons/fa';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { useLanguage } from '@/context/LanguageContext';
@@ -28,10 +28,37 @@ interface ProjectsProps {
   id?: string;
 }
 
+// Custom hook for interval with pause functionality
+function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef<() => void>();
+  
+  // Remember the latest callback
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+  
+  // Set up the interval
+  useEffect(() => {
+    function tick() {
+      savedCallback.current?.();
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
 export default function Projects({ id }: ProjectsProps) {
   const { t } = useLanguage();
   const [activeProject, setActiveProject] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
+  const [mobileProjectIndex, setMobileProjectIndex] = useState(0);
+  const [autoPlayProgress, setAutoPlayProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const SLIDE_DURATION = 5000; // 5 seconds per project
+  const PAUSE_AFTER_INTERACTION = 8000; // 8 seconds pause after user interaction
   
   const projects: Project[] = [
     {
@@ -108,12 +135,48 @@ export default function Projects({ id }: ProjectsProps) {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.4, 1, 1, 0.4]);
   const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [60, 0, 0, 60]);
 
+  // Auto-advance carousel - always running
+  useInterval(() => {
+    if (!isPaused) {
+      // Update progress bar
+      setAutoPlayProgress((prev) => {
+        if (prev >= 100) {
+          // Advance to next slide and reset progress
+          setActiveProject((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+          setMobileProjectIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+          return 0;
+        }
+        return prev + (100 / (SLIDE_DURATION / 50)); // Smooth progression
+      });
+    }
+  }, 50); // Update progress every 50ms (20 times per second)
+
+  // Reset progress when manually changing projects
+  useEffect(() => {
+    setAutoPlayProgress(0);
+  }, [activeProject, mobileProjectIndex]);
+
+  // Temporarily pause auto-sliding after user interaction
+  const handleUserInteraction = useCallback(() => {
+    setIsPaused(true);
+    setAutoPlayProgress(0);
+    
+    // Resume after PAUSE_AFTER_INTERACTION milliseconds
+    const timer = setTimeout(() => {
+      setIsPaused(false);
+    }, PAUSE_AFTER_INTERACTION);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const nextProject = () => {
     setActiveProject((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+    handleUserInteraction();
   };
 
   const prevProject = () => {
     setActiveProject((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
+    handleUserInteraction();
   };
 
   const cardVariants = {
@@ -145,6 +208,7 @@ export default function Projects({ id }: ProjectsProps) {
     },
     hover: {
       y: -10,
+      scale: 1.02,
       transition: {
         duration: 0.3,
         ease: "easeOut"
@@ -192,6 +256,23 @@ export default function Projects({ id }: ProjectsProps) {
         />
       );
     });
+  };
+
+  // Function to handle mobile swipe gestures
+  const handleDragEnd = (event: any, info: any) => {
+    if (info.offset.x > 100) {
+      // Swiped right
+      setMobileProjectIndex(prev => 
+        prev === 0 ? projects.length - 1 : prev - 1
+      );
+      handleUserInteraction();
+    } else if (info.offset.x < -100) {
+      // Swiped left
+      setMobileProjectIndex(prev => 
+        prev === projects.length - 1 ? 0 : prev + 1
+      );
+      handleUserInteraction();
+    }
   };
 
   return (
@@ -254,7 +335,9 @@ export default function Projects({ id }: ProjectsProps) {
                   whileHover="hover"
                   variants={cardVariants}
                   className="absolute inset-0 w-full h-full"
+                  onHoverStart={handleUserInteraction}
                 >
+                  {/* Enhanced glass card effect */}
                   <div className={`absolute -inset-1 rounded-2xl bg-gradient-to-br ${projects[activeProject].color} opacity-70 blur-md transform -rotate-2`} />
                   <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 opacity-90"></div>
                   <div className="absolute inset-px rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 backdrop-blur"></div>
@@ -264,11 +347,11 @@ export default function Projects({ id }: ProjectsProps) {
                       src={projects[activeProject].image}
                       alt={t(projects[activeProject].titleKey)}
                       fill
-                      className="object-cover"
+                      className="object-cover transform scale-105 hover:scale-110 transition-all duration-1000"
                       sizes="(max-width: 768px) 100vw, 50vw"
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end z-20">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-end z-20">
                       <div className="p-8 w-full">
                         <motion.div 
                           initial={{ opacity: 0, y: 10 }} 
@@ -276,20 +359,20 @@ export default function Projects({ id }: ProjectsProps) {
                           transition={{ delay: 0.3 }}
                           className="flex items-center gap-3 mb-3"
                         >
-                          <div className={`p-2 rounded-lg bg-slate-800/80 backdrop-blur-sm ring-1 ring-white/20`}>
+                          <div className={`p-2 rounded-lg bg-slate-800/80 backdrop-blur-sm ring-1 ring-white/20 shadow-lg shadow-${projects[activeProject].color.split('-')[1]}/20`}>
                             {projects[activeProject].icon}
                           </div>
-                          <h3 className="text-3xl font-bold text-white">
+                          <h3 className="text-3xl font-bold text-white drop-shadow-md">
                             {t(projects[activeProject].titleKey)}
                           </h3>
                         </motion.div>
                         <div className="flex flex-wrap gap-2 mb-3">
-                          {projects[activeProject].tags.map((tag) => (
+                          {projects[activeProject].tags.map((tag, idx) => (
                             <motion.span 
                               key={tag}
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.4 }}
+                              transition={{ delay: 0.4 + idx * 0.05 }}
                               className="px-3 py-1 text-sm font-medium bg-slate-700/50 text-blue-200 rounded-full backdrop-blur-sm border border-slate-600/50"
                             >
                               {tag}
@@ -298,6 +381,15 @@ export default function Projects({ id }: ProjectsProps) {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Auto-play progress bar */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 z-30">
+                      <div 
+                        className={`h-full bg-gradient-to-r ${projects[activeProject].color} rounded-full transition-all duration-200 ease-linear`}
+                        style={{ width: `${autoPlayProgress}%` }}
+                      ></div>
+                    </div>
+                    
                     <div className="absolute top-4 right-4 z-30 flex space-x-2">
                       <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
                       <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50"></div>
@@ -318,6 +410,7 @@ export default function Projects({ id }: ProjectsProps) {
                   exit="exit"
                   variants={cardVariants}
                   className="backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl bg-slate-900/50 overflow-hidden relative"
+                  onHoverStart={handleUserInteraction}
                 >
                   <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
                   <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
@@ -382,11 +475,11 @@ export default function Projects({ id }: ProjectsProps) {
             </div>
           </div>
           
-          {/* Project navigation */}
+          {/* Project navigation - simplified without play/pause */}
           <div className="mt-16 flex justify-between items-center">
             <button 
               onClick={prevProject}
-              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-colors group"
+              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-all group hover:shadow-blue-500/20 hover:border-blue-400/30 active:scale-95"
               aria-label="Previous project"
             >
               <HiChevronLeft className="text-2xl text-white group-hover:text-blue-300 transition-colors" />
@@ -398,7 +491,7 @@ export default function Projects({ id }: ProjectsProps) {
             
             <button 
               onClick={nextProject}
-              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-colors group"
+              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-all group hover:shadow-blue-500/20 hover:border-blue-400/30 active:scale-95"
               aria-label="Next project"
             >
               <HiChevronRight className="text-2xl text-white group-hover:text-blue-300 transition-colors" />
@@ -406,52 +499,119 @@ export default function Projects({ id }: ProjectsProps) {
           </div>
         </div>
         
-        {/* Mobile and tablet layout */}
-        <div className="lg:hidden space-y-14">
-          {projects.map((project, index) => (
+        {/* Mobile and tablet layout - with auto-sliding */}
+        <div className="lg:hidden">
+          {/* Project switcher indicators - simplified */}
+          <div className="flex justify-center mb-6">
+            <div className="flex items-center space-x-2 bg-slate-800/30 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-700/30">
+              {projects.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setMobileProjectIndex(index);
+                    handleUserInteraction();
+                  }}
+                  className={`relative w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    mobileProjectIndex === index 
+                      ? `bg-gradient-to-r ${projects[index].color} w-6 shadow-lg`
+                      : 'bg-gray-400/30 dark:bg-gray-600/50'
+                  }`}
+                  aria-label={`Go to project ${index + 1}`}
+                >
+                  {mobileProjectIndex === index && (
+                    <span className="absolute inset-0 rounded-full animate-ping bg-white opacity-75"></span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Swipeable project cards with auto-sliding */}
+          <AnimatePresence mode="wait">
             <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              viewport={{ once: true, margin: "-50px" }}
-              className="backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl bg-slate-900/40 relative"
+              key={mobileProjectIndex}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              drag="x"
+              dragControls={dragControls}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={handleDragEnd}
+              onClick={() => handleUserInteraction()}
+              className="backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl bg-slate-900/40 relative touch-pan-y"
             >
+              {/* Enhanced card design */}
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
               <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
-              <div className={`absolute -left-20 -top-20 w-40 h-40 rounded-full bg-gradient-to-br ${project.color} opacity-20 blur-3xl`}></div>
+              <div className={`absolute -left-20 -top-20 w-40 h-40 rounded-full bg-gradient-to-br ${projects[mobileProjectIndex].color} opacity-20 blur-3xl`}></div>
+              
+              {/* Auto-play progress bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 z-50">
+                <motion.div 
+                  className={`h-full bg-gradient-to-r ${projects[mobileProjectIndex].color} rounded-full transition-all duration-200 ease-linear`}
+                  style={{ width: `${autoPlayProgress}%` }}
+                ></motion.div>
+              </div>
               
               <div className="relative h-72 w-full">
-                <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-20 z-10`} />
+                {/* Glass overlay for image */}
+                <div className="absolute inset-0 z-10">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${projects[mobileProjectIndex].color} opacity-20 mix-blend-overlay`}></div>
+                  <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
+                </div>
+                
                 <Image
-                  src={project.image}
-                  alt={t(project.titleKey)}
+                  src={projects[mobileProjectIndex].image}
+                  alt={t(projects[mobileProjectIndex].titleKey)}
                   fill
-                  className="object-cover"
+                  className="object-cover transform scale-105 transition-transform duration-700"
                   sizes="100vw"
+                  priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-transparent flex items-start pt-8 z-20">
+                
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-transparent flex items-start pt-8 z-20">
                   <div className="px-6 w-full">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-lg bg-slate-800/60 backdrop-blur-sm">
-                        {project.icon}
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }} 
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex items-center gap-3 mb-3"
+                    >
+                      <div className={`p-2.5 rounded-xl bg-gradient-to-br ${projects[mobileProjectIndex].color} bg-opacity-80 shadow-lg shadow-${projects[mobileProjectIndex].color.split('-')[1]}/40`}>
+                        {projects[mobileProjectIndex].icon}
                       </div>
-                      <h3 className="text-2xl font-bold text-white">
-                        {t(project.titleKey)}
+                      <h3 className="text-2xl font-bold text-white drop-shadow-md">
+                        {t(projects[mobileProjectIndex].titleKey)}
                       </h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
+                    </motion.div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="flex flex-wrap gap-2"
+                    >
+                      {projects[mobileProjectIndex].tags.map((tag, idx) => (
                         <span 
                           key={tag}
-                          className="px-2.5 py-1 text-xs font-medium bg-slate-800/50 text-blue-200 rounded-full backdrop-blur-sm border border-slate-700/50"
+                          className={`px-3 py-1.5 text-xs font-medium bg-slate-800/60 text-blue-100 rounded-full backdrop-blur-md border border-slate-700/50 shadow-inner`}
+                          style={{ transitionDelay: `${idx * 50}ms` }}
                         >
                           {tag}
                         </span>
                       ))}
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
+                
+                {/* Swipe indicator */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-1 text-white/60 text-xs z-30">
+                  <HiChevronLeft size={16} />
+                  <span>Swipe</span>
+                  <HiChevronRight size={16} />
+                </div>
+                
                 <div className="absolute top-3 right-3 z-30 flex space-x-1.5">
                   <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></div>
                   <div className="w-2 h-2 rounded-full bg-yellow-500 shadow-sm shadow-yellow-500/50"></div>
@@ -460,51 +620,94 @@ export default function Projects({ id }: ProjectsProps) {
               </div>
               
               <div className="p-6">
-                <p className="text-blue-100/80 mb-6 leading-relaxed">
-                  {t(project.descriptionKey)}
-                </p>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-blue-100/80 mb-6 leading-relaxed"
+                >
+                  {t(projects[mobileProjectIndex].descriptionKey)}
+                </motion.p>
                 
-                <div className="mb-6">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="mb-6"
+                >
                   <div className="inline-flex items-center mb-3 space-x-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 animate-pulse"></div>
                     <h4 className="text-lg font-semibold text-blue-200">Key Features</h4>
                   </div>
-                  <ul className="space-y-2">
-                    {project.highlightKeys.slice(0, 3).map((highlightKey, idx) => (
-                      <li 
+                  <ul className="space-y-2.5">
+                    {projects[mobileProjectIndex].highlightKeys.slice(0, 3).map((highlightKey, idx) => (
+                      <motion.li 
                         key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 + idx * 0.1 }}
                         className="flex items-start text-sm text-blue-100/80"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 mr-2 mt-1.5"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 mr-3 mt-1.5"></div>
                         {t(highlightKey)}
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
                 
-                <div className="flex gap-3">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="flex gap-3"
+                >
                   <a 
-                    href={project.github}
+                    href={projects[mobileProjectIndex].github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-800/70 hover:bg-slate-700/70 text-white rounded-lg text-sm transition-all hover:scale-105 border border-slate-700/50"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800/70 hover:bg-slate-700/80 text-white rounded-xl text-sm transition-all active:scale-95 border border-slate-700/50 w-1/2"
                   >
-                    <FaGithub size={14} /> Code
+                    <FaGithub size={16} /> View Code
                   </a>
-                  {project.demo && (
+                  {projects[mobileProjectIndex].demo && (
                     <a 
-                      href={project.demo}
+                      href={projects[mobileProjectIndex].demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r ${project.color} text-white rounded-lg text-sm shadow-md transition-all hover:scale-105`}
+                      className={`flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r ${projects[mobileProjectIndex].color} text-white rounded-xl text-sm shadow-md transition-all active:scale-95 w-1/2`}
                     >
-                      <FaExternalLinkAlt size={14} /> Demo
+                      <FaExternalLinkAlt size={16} /> Live Demo
                     </a>
                   )}
-                </div>
+                </motion.div>
               </div>
             </motion.div>
-          ))}
+          </AnimatePresence>
+          
+          {/* Navigation buttons for mobile */}
+          <div className="flex justify-between mt-6">
+            <button 
+              onClick={() => {
+                setMobileProjectIndex(prev => prev === 0 ? projects.length - 1 : prev - 1);
+                handleUserInteraction();
+              }}
+              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-all group active:scale-95"
+              aria-label="Previous project"
+            >
+              <HiChevronLeft className="text-2xl text-white group-hover:text-blue-300 transition-colors" />
+            </button>
+            
+            <button 
+              onClick={() => {
+                setMobileProjectIndex(prev => prev === projects.length - 1 ? 0 : prev + 1);
+                handleUserInteraction();
+              }}
+              className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700/60 shadow-lg border border-white/10 backdrop-blur-sm transition-all group active:scale-95"
+              aria-label="Next project"
+            >
+              <HiChevronRight className="text-2xl text-white group-hover:text-blue-300 transition-colors" />
+            </button>
+          </div>
         </div>
       </motion.div>
 

@@ -53,12 +53,9 @@ export default function Contact({ id }: ContactProps) {
   ];
 
   return (
-    <section id={id} className="py-24 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900/30 z-0" />
-      
-      {/* Background decorative elements */}
-      <div className="absolute -left-[10%] top-[20%] w-64 h-64 bg-gradient-to-r from-purple-300/10 to-blue-300/10 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl z-0"></div>
-      <div className="absolute -right-[10%] bottom-[20%] w-80 h-80 bg-gradient-to-r from-green-300/10 to-teal-300/10 dark:from-green-900/10 dark:to-teal-900/10 rounded-full blur-3xl z-0"></div>
+    <section id={id} className="py-16 sm:py-20 relative overflow-hidden">
+      {/* Simplified background - just a subtle gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/50 dark:to-gray-900/20 z-0" />
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
@@ -75,61 +72,66 @@ export default function Contact({ id }: ContactProps) {
         </motion.div>
 
         <motion.div 
-          className="max-w-4xl mx-auto mt-16 px-4"
+          className="max-w-4xl mx-auto mt-10 sm:mt-12 px-2 sm:px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          {/* Modern staggered layout */}
-          <div className="flex flex-col md:flex-row justify-center items-stretch gap-8">
+          {/* Clean minimalist layout */}
+          <div className="flex flex-col md:flex-row justify-center items-stretch gap-4 sm:gap-6">
             {contactCards.map((card, index) => (
               <motion.div
                 key={card.name}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
+                transition={{ duration: 0.4, delay: index * 0.15 }}
                 viewport={{ once: true }}
                 className="w-full md:w-1/3 flex"
               >
-                <motion.div
-                  whileHover={{ scale: 1.03, rotateY: 5, rotateX: -5 }}
-                  transition={{ 
-                    type: "spring", 
-                    stiffness: 300,
-                    damping: 15 
-                  }}
-                  className="group relative h-full w-full"
+                <a 
+                  href={card.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block h-full w-full group"
                 >
-                  {/* Card with backdrop blur and gradient */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${card.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm -z-10`}></div>
-                  
-                  <a 
-                    href={card.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block h-full"
-                  >
-                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-2xl p-8 h-full shadow-lg shadow-gray-200/50 dark:shadow-gray-900/30 transition duration-300 group-hover:shadow-xl flex flex-col items-center">
-                      <div className="flex flex-col items-center">
-                        <motion.div 
-                          whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-                          transition={{ duration: 0.5 }}
-                          className={`w-18 h-18 flex items-center justify-center rounded-2xl p-4 ${card.iconBg} ${card.iconColor} mb-6`}
-                        >
-                          {card.icon}
-                        </motion.div>
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-3">{card.name}</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 text-center">{card.description}</p>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-6 h-full 
+                    border border-gray-100 dark:border-gray-700/50
+                    shadow-sm hover:shadow-md dark:shadow-none
+                    transition-all duration-300 ease-out">
+                    
+                    <div className="flex flex-row sm:flex-col items-center sm:items-start sm:text-left gap-4 sm:gap-0">
+                      <div 
+                        className={`w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center 
+                          rounded-md bg-opacity-10 dark:bg-opacity-20
+                          ${card.iconColor.replace('text-', 'bg-').replace('dark:text-', 'dark:bg-').replace('-400', '-100').replace('-500', '-100')}
+                          sm:mb-5`}
+                      >
+                        {card.icon}
+                      </div>
+                      
+                      <div className="flex-1">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-1">{card.name}</h3>
+                        
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{card.description}</p>
+                        
+                        {/* Subtle hover indicator */}
+                        <div className="mt-3 sm:mt-4 h-[1px] w-0 group-hover:w-16 bg-current opacity-40 transition-all duration-300 ease-in-out"></div>
+                      </div>
+                      
+                      {/* Clean, minimal icon indicator */}
+                      <div className="hidden sm:block ml-auto text-gray-300 dark:text-gray-600 group-hover:translate-x-1 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14"></path>
+                          <path d="M12 5l7 7-7 7"></path>
+                        </svg>
                       </div>
                     </div>
-                  </a>
-                </motion.div>
+                  </div>
+                </a>
               </motion.div>
             ))}
           </div>
-
-         
         </motion.div>
       </div>
     </section>

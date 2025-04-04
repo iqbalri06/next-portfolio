@@ -4,7 +4,6 @@ import Projects from "@/components/sections/Projects";
 import Skills from "@/components/sections/Skills";
 import Contact from "@/components/sections/Contact";
 import Navbar from "@/components/Navbar";
-import DockNavigation from "@/components/DockNavigation";
 import Footer from "@/components/Footer";
 
 export default function Home() {
