@@ -26,13 +26,7 @@ const getExperiences = (lang: 'en' | 'id'): ExperienceItem[] => ({
       description: "Completed a 6-month internship developing web applications and learning industry best practices.",
       skills: ["React", "TypeScript", "Tailwind CSS", "JavaScript", "HTML", "CSS", "Bootstrap", "Material UI", "REST APIs"]
     },
-    {
-      year: "2025 - Present",
-      title: "Frontend Developer (Mobile)",
-      company: "Perumda Tirta Pakuan Kota Bogor",
-      description: "Working as a freelance frontend developer focusing on mobile applications development.",
-      skills: ["React Native", "Flutter", "UI/UX Design", "Figma", "Android Development", "Redux/MobX", "Native APIs", "Firebase", "REST APIs", "Mobile Navigation", "Mobile UI Components"]
-    }
+   
   ],
   id: [
     {
@@ -42,13 +36,6 @@ const getExperiences = (lang: 'en' | 'id'): ExperienceItem[] => ({
       description: "Menyelesaikan magang 6 bulan mengembangkan aplikasi web dan mempelajari praktik terbaik industri.",
       skills: ["React", "TypeScript", "Tailwind CSS", "JavaScript", "HTML", "CSS", "Bootstrap", "Material UI", "REST APIs"]
     },
-    {
-      year: "2025 - Sekarang",
-      title: "Frontend Developer (Mobile)",
-      company: "Perumda Tirta Pakuan Kota Bogor",
-      description: "Bekerja sebagai frontend developer freelance yang fokus pada pengembangan aplikasi mobile.",
-      skills: ["React Native", "Flutter", "Desain UI/UX", "Figma", "Pengembangan Android", "Redux/MobX", "Native APIs", "Firebase", "REST APIs", "Navigasi Mobile", "Komponen UI Mobile"]
-    }
   ]
 })[lang];
 
