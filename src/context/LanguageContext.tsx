@@ -210,19 +210,15 @@ const translations: Translations = {
     'project4.highlight2': 'Kontrol akses berbasis peran',
     'project4.highlight3': 'Analitik dashboard',
     'project4.highlight4': 'Ekosistem alat terintegrasi',
-    
-    // Contact section
+      // Contact section
     'contact.title': 'Hubungi Saya',
     'contact.subtitle': 'Punya proyek dalam pikiran? Mari bicarakan.',
     'contact.nameLabel': 'Nama Anda',
     'contact.emailLabel': 'Email Anda',
     'contact.messageLabel': 'Pesan Anda',
     'contact.sendButton': 'Kirim Pesan',
-    'contact.locationTitle': 'Lokasi',
-    'contact.emailTitle': 'Email',
+    'contact.locationTitle': 'Lokasi',    'contact.emailTitle': 'Email',
     'contact.phoneTitle': 'Telepon',
-    'contact.connect': 'Hubungi Saya',
-    'contact.discuss': 'Mari diskusikan proyek anda berikutnya',
     'contact.whatsapp': 'Chat cepat untuk respon langsung',
     'contact.instagram': '@iqbalri._',
     'contact.email': 'iqbalroudatul@gmail.com',

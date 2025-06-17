@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaInstagram } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaInstagram, FaCode } from 'react-icons/fa';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useLanguage } from '@/context/LanguageContext';
-import profileImage from '/src/images/profile.png';
+import ProfileCard from '@/blocks/Components/ProfileCard/ProfileCard';
 
-// Modern animated button component with enhanced design
+
+const profileImage = '/assets/images/profile.png';
+const iconUrl = '/assets/images/code.png';
+
+
+
 const ModernButton = ({ 
   href, 
   variant, 
@@ -104,115 +108,7 @@ const SkillBadge = ({
   );
 };
 
-// Animated floating particle
-const FloatingParticle = ({ 
-  size, 
-  color, 
-  initialPosition,
-  duration = 20
-}: {
-  size: number,
-  color: string,
-  initialPosition: {x: string, y: string},
-  duration?: number
-}) => {
-  return (
-    <motion.div
-      className={`absolute rounded-full opacity-70 ${color}`}
-      style={{
-        width: size,
-        height: size,
-        left: initialPosition.x,
-        top: initialPosition.y,
-      }}
-      animate={{
-        y: ["0%", "-30%", "30%", "0%"],
-        x: ["0%", "20%", "-20%", "0%"],
-      }}
-      transition={{
-        duration: duration,
-        repeat: Infinity,
-        repeatType: "mirror",
-        ease: "easeInOut"
-      }}
-    />
-  );
-};
 
-// Animated geometric shape
-const GeometricShape = ({ 
-  shape, 
-  color, 
-  size, 
-  position, 
-  duration = 20,
-  delay = 0
-}: { 
-  shape: 'circle' | 'square' | 'triangle' | 'donut',
-  color: string, 
-  size: number,
-  position: {x: string, y: string},
-  duration?: number,
-  delay?: number
-}) => {
-  const shapes = {
-    circle: "rounded-full",
-    square: "rounded-md rotate-45",
-    triangle: "triangle",
-    donut: "donut"
-  };
-
-  return (
-    <motion.div
-      className={`absolute ${shapes[shape]} ${color}`}
-      style={{
-        width: size,
-        height: size,
-        left: position.x,
-        top: position.y,
-      }}
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ 
-        opacity: [0.2, 0.5, 0.2],
-        scale: [1, 1.2, 1],
-        rotate: shape === 'square' ? [45, 135, 45] : 0,
-      }}
-      transition={{
-        duration: duration,
-        delay: delay,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "easeInOut"
-      }}
-    />
-  );
-};
-
-// Modern wave component
-const WaveAnimation = ({ className }: { className?: string }) => {
-  return (
-    <div className={`absolute w-full overflow-hidden ${className}`} style={{ height: '100px' }}>
-      <motion.div
-        className="absolute bottom-0 left-0 w-[200%] h-full bg-gradient-to-r from-indigo-500/10 via-violet-500/10 to-indigo-500/10 dark:from-indigo-900/20 dark:via-violet-900/20 dark:to-indigo-900/20"
-        style={{
-          maskImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.15'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' opacity='.25'/%3E%3C/svg%3E\")",
-          maskSize: '100% 100%',
-          WebkitMaskImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.15'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' opacity='.25'/%3E%3C/svg%3E\")",
-          WebkitMaskSize: '100% 100%',
-        }}
-        animate={{ 
-          x: ['-50%', '0%'],
-        }}
-        transition={{ 
-          duration: 25, 
-          repeat: Infinity, 
-          repeatType: "loop",
-          ease: "linear"
-        }}
-      />
-    </div>
-  );
-};
 
 export default function Hero() {
   const { t } = useLanguage();
@@ -268,6 +164,11 @@ export default function Hero() {
     
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, fullText]);
+
+  const handleContactClick = () => {
+    // Smooth scroll to contact section
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section id="home" className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-20 sm:pt-0">
@@ -399,92 +300,26 @@ export default function Hero() {
             </motion.div>
           </motion.div>
           
-          {/* Profile image container - spans 5 columns on md+ screens */}
+          {/* Profile card container - spans 5 columns on md+ screens */}
           <motion.div 
             className="flex justify-center md:justify-end md:col-span-5 order-1 md:order-2"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
             ref={containerRef}
-          >
-            <div className="relative w-64 h-64 xs:w-72 xs:h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[420px] lg:h-[420px]">
-              {/* Enhanced decorative elements with animation */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20 rounded-full blur-xl opacity-80"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.7, 0.9, 0.7],
-                }}
-                transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
-              />
-              
-              {/* Profile image with modern frame */}
-              <motion.div 
-                className="relative w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 rounded-full p-1.5 shadow-2xl"
-                whileHover={{ 
-                  scale: 1.03, 
-                  boxShadow: "0 25px 50px -12px rgba(79, 70, 229, 0.4)",
-                  transition: { duration: 0.4 } 
-                }}
-              >
-                <div className="absolute inset-1 bg-gradient-to-br from-white/80 to-white/50 dark:from-gray-900/80 dark:to-gray-900/50 rounded-full backdrop-blur-sm"></div>
-                <div className="relative w-full h-full overflow-hidden rounded-full border-8 border-white/90 dark:border-gray-900/90 shadow-inner">
-                  <Image 
-                    src={profileImage}
-                    alt="Iqbal Roudatul Irfan"
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 768px) 90vw, 40vw"
-                  />
-                </div>
-                
-                {/* Animated orbit ring decoration */}
-                <motion.div 
-                  className="absolute -inset-4 border-2 border-dashed border-indigo-300/30 dark:border-indigo-700/30 rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div 
-                  className="absolute -inset-8 border-2 border-dashed border-violet-300/20 dark:border-violet-700/20 rounded-full"
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-                />
-                
-                {/* Skill badges with improved responsive positioning */}
-                <SkillBadge 
-                  position="-left-16 top-[10%]" 
-                  mobilePosition="-left-14 -top-2"
-                  delay={1.2}
-                >
-                  <span className="flex items-center gap-1.5">💻 Frontend Developer</span>
-                </SkillBadge>
-                
-                <SkillBadge 
-                  position="-right-14 top-[25%]" 
-                  mobilePosition="-right-14 top-[15%]"
-                  delay={1.4}
-                >
-                  <span className="flex items-center gap-1.5">🛠️ Backend Developer</span>
-                </SkillBadge>
-                
-                <SkillBadge 
-                  position="-left-16 bottom-[25%]" 
-                  mobilePosition="-left-14 bottom-[15%]"
-                  delay={1.6}
-                >
-                  <span className="flex items-center gap-1.5">📱 Mobile Developer</span>
-                </SkillBadge>
-                
-                <SkillBadge 
-                  position="-right-14 bottom-[15%]" 
-                  mobilePosition="-right-14 -bottom-2"
-                  delay={1.8}
-                >
-                  <span className="flex items-center gap-1.5">🚀 Full Stack</span>
-                </SkillBadge>
-              </motion.div>
-            </div>
+          >            <ProfileCard
+              name="Iqbal Roudatul Irfan"
+              title={t('hero.role')}
+              handle="iqbalri06"
+              status="Online"
+              contactText={t('contact.title')}
+              avatarUrl={profileImage}
+              iconUrl={iconUrl}
+              showUserInfo={true}
+              enableTilt={!isReducedMotion}
+              onContactClick={handleContactClick}
+              className="max-w-[350px] sm:max-w-[380px] md:max-w-[420px]"
+            />
           </motion.div>
         </div>
       </div>
@@ -504,25 +339,6 @@ export default function Hero() {
             transition={{ duration: 1.5, repeat: Infinity, repeatType: "loop" }}
           >
             <motion.div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full" />
-          </motion.div>
-        </motion.div>
-      )}
-
-      {/* Mobile swipe indicator for touch devices */}
-      {isTouchDevice && (
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
-          transition={{ delay: 2, duration: 0.8 }}
-        >
-          <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Swipe up</span>
-          <motion.div
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-gray-400 dark:text-gray-500"
-          >
-            ↑
           </motion.div>
         </motion.div>
       )}

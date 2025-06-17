@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
     unoptimized: process.env.NODE_ENV !== 'production',
     remotePatterns: [
@@ -10,17 +11,18 @@ const nextConfig = {
     ],
   },
   webpack: (config) => {
+    // Add support for GLB files
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
-      use: {
-        loader: 'file-loader',
-        options: {
-          publicPath: '/_next/static/',
-          outputPath: 'static/',
-          name: '[name].[hash].[ext]',
-        },
-      },
+      type: 'asset/resource',
     });
+
+    // Ensure proper handling of image files
+    config.module.rules.push({
+      test: /\.(png|jpg|jpeg|gif|svg)$/i,
+      type: 'asset/resource',
+    });
+
     return config;
   },
 }

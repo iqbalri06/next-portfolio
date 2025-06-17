@@ -1,7 +1,20 @@
 export {};
 
-declare module '*.glb';
-declare module '*.png';
+declare module '*.glb' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.png' {
+  interface StaticImageData {
+    src: string;
+    height: number;
+    width: number;
+    blurDataURL?: string;
+  }
+  const content: StaticImageData;
+  export default content;
+}
 
 declare module 'meshline' {
   export const MeshLineGeometry: any;

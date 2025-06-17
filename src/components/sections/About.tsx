@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { BiCode, BiBrain, BiDevices } from 'react-icons/bi';
 import { FaLaptopCode, FaUserTie } from 'react-icons/fa';
-import proImage from '/src/images/profile.png';
 import { useLanguage } from '@/context/LanguageContext';
 import Waves from '@/components/ui/Waves';
+import Lanyard from '@/blocks/Components/Lanyard/Lanyard';
 
 interface ExperienceItem {
   year: string;
@@ -26,7 +25,14 @@ const getExperiences = (lang: 'en' | 'id'): ExperienceItem[] => ({
       description: "Completed a 6-month internship developing web applications and learning industry best practices.",
       skills: ["React", "TypeScript", "Tailwind CSS", "JavaScript", "HTML", "CSS", "Bootstrap", "Material UI", "REST APIs"]
     },
-   
+    {
+      year: "Jun 2025 - Now",
+      title: "Junior Programmer",
+      company: "PT. EMCO DIGITAL INDONESIA",
+     description: "Developing logistics web applications using PHP CodeIgniter, managing inventory systems, shipment tracking, and warehouse management. Responsible for backend development, database integration, and implementing features to optimize logistics operations.",
+      skills: ["PHP", "CodeIgniter", "MySQL", "JavaScript", "HTML", "CSS", "Bootstrap", "jQuery", "REST APIs"]
+    }
+
   ],
   id: [
     {
@@ -36,6 +42,13 @@ const getExperiences = (lang: 'en' | 'id'): ExperienceItem[] => ({
       description: "Menyelesaikan magang 6 bulan mengembangkan aplikasi web dan mempelajari praktik terbaik industri.",
       skills: ["React", "TypeScript", "Tailwind CSS", "JavaScript", "HTML", "CSS", "Bootstrap", "Material UI", "REST APIs"]
     },
+    {
+      year: "Jun 2025 - Sekarang",
+      title: "Junior Programmer",
+      company: "PT. EMCO DIGITAL INDONESIA",
+      description: "Mengembangkan aplikasi web logistik dengan PHP CodeIgniter, mengelola sistem inventaris, tracking pengiriman, dan manajemen gudang. Bertanggung jawab dalam pengembangan backend, integrasi database, dan implementasi fitur untuk mengoptimalkan operasi logistik.",
+      skills: ["PHP", "CodeIgniter", "MySQL", "JavaScript", "HTML", "CSS", "Bootstrap", "jQuery", "REST APIs"]
+    },
   ]
 })[lang];
 
@@ -43,24 +56,24 @@ interface AboutProps {
   id?: string;
 }
 
-// Enhanced glass-card effect component with better hover animations
-const GlassCard = ({ 
-  children, 
+
+const GlassCard = ({
+  children,
   className = "",
   delay = 0,
   hover = true
-}: { 
-  children: React.ReactNode; 
+}: {
+  children: React.ReactNode;
   className?: string;
   delay?: number;
   hover?: boolean;
 }) => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.6, delay, type: "spring", stiffness: 100 }}
     viewport={{ once: true, margin: "-100px" }}
-    whileHover={hover ? { 
+    whileHover={hover ? {
       y: -4, // Reduced hover lift for more subtle effect
       boxShadow: "0 12px 24px rgba(0,0,0,0.08)",
       transition: { duration: 0.3, type: "spring", stiffness: 300 }
@@ -74,7 +87,7 @@ const GlassCard = ({
 
 // Simplified section title with animated underline effect
 const SectionTitle = ({ title }: { title: string }) => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0, y: -20 }}
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.7, type: "spring", stiffness: 100 }}
@@ -84,7 +97,7 @@ const SectionTitle = ({ title }: { title: string }) => (
     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white inline-block">
       {title}
       <div className="relative h-1 mt-3">
-        <motion.div 
+        <motion.div
           initial={{ width: "0%" }}
           whileInView={{ width: "100%" }}
           transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
@@ -120,13 +133,13 @@ const FloatingIcons = () => {
       {[1, 2, 3].map((_, i) => (
         <motion.div
           key={i}
-          initial={{ 
+          initial={{
             opacity: 0.1 + Math.random() * 0.2,
             x: Math.random() * 100,
             y: Math.random() * 100,
             scale: 0.5 + Math.random() * 0.3,
           }}
-          animate={{ 
+          animate={{
             y: [0, -10, 0, 10, 0],
           }}
           transition={{
@@ -165,11 +178,11 @@ const GitHubSection = () => {
       try {
         setLoading(true);
         const response = await fetch('https://api.github.com/users/iqbalri06/repos?sort=updated&per_page=4');
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch repositories: ${response.status}`);
         }
-        
+
         const data = await response.json();
         setRepos(data);
         setLoading(false);
@@ -209,13 +222,13 @@ const GitHubSection = () => {
           <h4 className="text-base font-semibold text-gray-900 dark:text-white"> GitHub
           </h4>
         </div>
-        <a 
-          href="https://github.com/iqbalri06" 
-          target="_blank" 
+        <a
+          href="https://github.com/iqbalri06"
+          target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
         >
-        View Profile
+          View Profile
           <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
@@ -272,7 +285,7 @@ const GitHubRepoCard = ({ repo, index }: { repo: any, index: number }) => {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return "today";
     } else if (diffDays === 1) {
@@ -295,10 +308,10 @@ const GitHubRepoCard = ({ repo, index }: { repo: any, index: number }) => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ 
+      whileHover={{
         y: -3,
         boxShadow: "0 8px 16px rgba(0,0,0,0.15)",
-        transition: { duration: 0.2 }  
+        transition: { duration: 0.2 }
       }}
       className="block bg-[#0d1117] border border-[#30363d] rounded-lg p-3 transition-all duration-200"
     >
@@ -315,11 +328,11 @@ const GitHubRepoCard = ({ repo, index }: { repo: any, index: number }) => {
           {repo.visibility}
         </span>
       </div>
-      
+
       <p className="text-[11px] text-[#8b949e] mb-2 line-clamp-2 h-[30px]">
         {repo.description || "No description provided"}
       </p>
-      
+
       <div className="flex items-center justify-between text-[10px] text-[#8b949e]">
         <div className="flex items-center gap-3">
           {repo.language && (
@@ -331,7 +344,7 @@ const GitHubRepoCard = ({ repo, index }: { repo: any, index: number }) => {
               <span>{repo.language}</span>
             </div>
           )}
-          
+
           {repo.stargazers_count > 0 && (
             <div className="flex items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
@@ -341,7 +354,7 @@ const GitHubRepoCard = ({ repo, index }: { repo: any, index: number }) => {
             </div>
           )}
         </div>
-        
+
         <div className="text-[10px]">
           <span>Updated {formatDate(repo.updated_at)}</span>
         </div>
@@ -357,10 +370,10 @@ export default function About({ id }: AboutProps) {
   const experiences = getExperiences(language);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   useEffect(() => {
     setMounted(true);
-    
+
     // Detect if user is on mobile device (iOS or Android)
     const checkMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
@@ -368,9 +381,9 @@ export default function About({ id }: AboutProps) {
       const isAndroid = /android/i.test(userAgent);
       setIsMobile(isIOS || isAndroid);
     };
-    
+
     checkMobile();
-    
+
     // Auto-highlight experience items
     const interval = setInterval(() => {
       setActiveIndex(prev => {
@@ -378,7 +391,7 @@ export default function About({ id }: AboutProps) {
         return (prev + 1) % experiences.length;
       });
     }, 3000);
-    
+
     return () => clearInterval(interval);
   }, [experiences.length]);
 
@@ -386,20 +399,20 @@ export default function About({ id }: AboutProps) {
     target: containerRef,
     offset: ["start end", "end start"]
   });
-  
+
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.4, 1, 1, 0.4]);
   const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.97, 1, 1, 0.97]);
   const y = useTransform(scrollYProgress, [0, 0.5, 1], [40, 0, -40]);
 
   const roleColors = ["blue", "purple", "green", "indigo", "pink"];
-  
+
   if (!mounted) {
     return <section id={id} className="py-16 relative overflow-hidden w-full" />;
   }
 
   return (
-    <section 
-      id={id} 
+    <section
+      id={id}
       className="py-16 md:py-24 relative overflow-hidden w-full"
       ref={containerRef}
     >
@@ -420,73 +433,41 @@ export default function About({ id }: AboutProps) {
           className="z-0 opacity-70"
         />
       </div>
-      
-      <FloatingIcons />
-      
-      <motion.div
+
+      <FloatingIcons />      <motion.div
         style={{ opacity, scale, y }}
         className="container mx-auto px-5 relative z-10 max-w-5xl" // Streamlined container
       >
         <SectionTitle title={t('about.title')} />
         
-        <div className="flex flex-col items-center md:flex-row md:items-start gap-10 md:gap-12">
-          {/* Profile section - Centered on mobile */}
-          <div className="w-full md:w-2/5 flex flex-col items-center md:items-start space-y-6">
-            <GlassCard className="p-2 overflow-hidden w-full max-w-[320px]">
-              <div className="relative h-[400px] w-full overflow-hidden rounded-md">
-                {/* Simplified photo frame */}
-                <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-purple-500/10 rounded-md z-0" />
-                
-                <Image
-                  src={proImage}
-                  alt="Iqbal Roudatul Irfan"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 320px"
-                  priority
-                  className="object-cover z-0"
-                  style={{ objectPosition: "center 10%" }}
-                />
-                
-                {/* Minimalist info overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-30">
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <div className="inline-block px-2 py-1 rounded-md bg-white/10 backdrop-blur-sm mb-2">
-                      <span className="text-xs font-medium text-white/90">FullStack Developer</span>
-                    </div>
-                    
-                    <h3 className="text-lg font-bold mb-1 text-white">Iqbal Roudatul Irfan</h3>
-                    
-                    <p className="text-xs text-white/80 max-w-[90%]">
-                      Passionate web & mobile developer focused on creating beautiful user experiences
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
+        <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
+          <div className="w-full md:w-2/5 flex flex-col gap-4 items-center md:items-start">
             
+                <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} />
+              
             {/* Role cards - Centered on mobile */}
             <div className="space-y-3 w-full max-w-[320px]">
-              {[{ 
-                  icon: <BiCode className="text-2xl text-blue-400" />, 
-                  title: t('about.role.fullstack'),
-                  desc: t('about.role.fullstack.description'),
-                  color: 'from-blue-500/10 to-blue-600/5',
-                  iconBg: 'bg-blue-900/20'
-                },
-                { 
-                  icon: <BiBrain className="text-2xl text-purple-400" />, 
-                  title: t('about.role.problemsolver'),
-                  desc: t('about.role.problemsolver.description'),
-                  color: 'from-purple-500/10 to-purple-600/5',
-                  iconBg: 'bg-purple-900/20'
-                },
-                { 
-                  icon: <BiDevices className="text-2xl text-green-400" />, 
-                  title: t('about.role.uiux'),
-                  desc: t('about.role.uiux.description'),
-                  color: 'from-green-500/10 to-green-600/5',
-                  iconBg: 'bg-green-900/20'
-                }
+              {[{
+                icon: <BiCode className="text-2xl text-blue-400" />,
+                title: t('about.role.fullstack'),
+                desc: t('about.role.fullstack.description'),
+                color: 'from-blue-500/10 to-blue-600/5',
+                iconBg: 'bg-blue-900/20'
+              },
+              {
+                icon: <BiBrain className="text-2xl text-purple-400" />,
+                title: t('about.role.problemsolver'),
+                desc: t('about.role.problemsolver.description'),
+                color: 'from-purple-500/10 to-purple-600/5',
+                iconBg: 'bg-purple-900/20'
+              },
+              {
+                icon: <BiDevices className="text-2xl text-green-400" />,
+                title: t('about.role.uiux'),
+                desc: t('about.role.uiux.description'),
+                color: 'from-green-500/10 to-green-600/5',
+                iconBg: 'bg-green-900/20'
+              }
               ].map((role, index) => (
                 <motion.div
                   key={index}
@@ -508,7 +489,7 @@ export default function About({ id }: AboutProps) {
                 </motion.div>
               ))}
             </div>
-            
+
             {/* GitHub repositories section - Only display on desktop or non-iOS/Android */}
             {!isMobile && (
               <div className="w-full max-w-[320px]">
@@ -516,14 +497,14 @@ export default function About({ id }: AboutProps) {
               </div>
             )}
           </div>
-          
+
           {/* Bio and Experience section - Centered on mobile */}
           <div className="w-full md:w-3/5 space-y-8">
-            <GlassCard 
+            <GlassCard
               className="p-6 md:p-7 space-y-5 w-full max-w-[600px] mx-auto md:mx-0"
               delay={0.2}
             >
-              <motion.h3 
+              <motion.h3
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
@@ -532,7 +513,7 @@ export default function About({ id }: AboutProps) {
               >
                 {t('about.greeting')}
               </motion.h3>
-              
+
               <div className="prose dark:prose-invert max-w-none">
                 <p className="text-gray-700 dark:text-gray-300 text-sm md:text-base">
                   {t('about.bio.part1')}
@@ -545,17 +526,17 @@ export default function About({ id }: AboutProps) {
                 </p>
               </div>
             </GlassCard>
-            
+
             {/* Enhanced experience timeline with minimalist design */}
             <GlassCard className="p-6 md:p-7 w-full max-w-[600px] mx-auto md:mx-0" delay={0.3}>
               <h4 className="text-lg font-semibold mb-6 flex items-center gap-2 text-gray-900 dark:text-white">
                 <span className="w-3 h-3 rounded-full bg-indigo-500 flex-shrink-0"></span>
                 {t('about.experience.title')}
               </h4>
-              
+
               <div className="space-y-6">
                 {experiences.map((exp, index) => (
-                  <motion.div 
+                  <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -572,7 +553,7 @@ export default function About({ id }: AboutProps) {
                         <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />
                       )}
                     </div>
-                    
+
                     {/* Content with clean, minimalist design */}
                     <div className="pl-4">
                       <div className="text-xs font-medium text-indigo-500 dark:text-indigo-400 mb-1">{exp.year}</div>
@@ -583,9 +564,9 @@ export default function About({ id }: AboutProps) {
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{exp.description}</p>
-                      
+
                       {exp.skills && (
-                        <motion.div 
+                        <motion.div
                           className="flex flex-wrap gap-1.5 p-3 bg-[#0d1117] dark:bg-[#0d1117]/90 rounded-md border border-[#30363d] relative overflow-hidden"
                           initial={{ opacity: 0, scale: 0.95 }}
                           whileInView={{ opacity: 1, scale: 1 }}
@@ -601,7 +582,7 @@ export default function About({ id }: AboutProps) {
                           </div>
 
                           {/* Animated highlight effect */}
-                          <motion.div 
+                          <motion.div
                             className="absolute inset-0 opacity-10"
                             animate={{
                               background: [
@@ -641,7 +622,7 @@ export default function About({ id }: AboutProps) {
                               }}
                             />
                           ))}
-                          
+
                           <div className="w-full flex items-center mb-3 text-xs text-[#8b949e] z-10">
                             <div className="flex items-center">
                               <FaUserTie className="mr-2 text-[#7ee787]" size={12} />
@@ -653,15 +634,15 @@ export default function About({ id }: AboutProps) {
                               </span>
                             </div>
                           </div>
-                          
+
                           {/* Repository tab indicators */}
                           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-[#1f6feb]/0 via-[#1f6feb] to-[#1f6feb]/0 z-10"></div>
-                          
+
                           <div className="flex flex-wrap gap-2 z-10 w-full">
                             {exp.skills.map((skill, i) => {
                               const colorIndex = i % roleColors.length;
                               const delay = i * 0.05;
-                              
+
                               // GitHub-inspired tag colors
                               const tagColors = {
                                 blue: "bg-[#1f6feb]/20 text-[#58a6ff] border-[#1f6feb]/30",
@@ -670,7 +651,7 @@ export default function About({ id }: AboutProps) {
                                 indigo: "bg-[#4f46e5]/20 text-[#a5b4fc] border-[#4f46e5]/30",
                                 pink: "bg-[#db61a2]/20 text-[#ffadda] border-[#db61a2]/30"
                               };
-                              
+
                               const dotColors = {
                                 blue: "#58a6ff",
                                 purple: "#d2a8ff",
@@ -678,40 +659,40 @@ export default function About({ id }: AboutProps) {
                                 indigo: "#a5b4fc",
                                 pink: "#ffadda"
                               };
-                              
+
                               const colorName = roleColors[colorIndex];
-                              
+
                               return (
                                 <motion.div
                                   key={i}
                                   initial={{ opacity: 0, y: 10 }}
                                   whileInView={{ opacity: 1, y: 0 }}
-                                  transition={{ 
-                                    duration: 0.3, 
-                                    delay: delay, 
-                                    type: "spring", 
-                                    stiffness: 100 
+                                  transition={{
+                                    duration: 0.3,
+                                    delay: delay,
+                                    type: "spring",
+                                    stiffness: 100
                                   }}
                                   viewport={{ once: true }}
-                                  whileHover={{ 
+                                  whileHover={{
                                     scale: 1.05,
                                     boxShadow: `0 0 8px 1px ${dotColors[colorName as keyof typeof dotColors]}40`,
-                                    transition: { duration: 0.1 } 
+                                    transition: { duration: 0.1 }
                                   }}
                                   className="relative rounded-md"
                                 >
                                   <span className={`text-xs font-medium px-2.5 py-1 rounded-md border flex items-center 
                                     ${tagColors[colorName as keyof typeof tagColors]}`}
                                   >
-                                    <span className="w-2 h-2 rounded-full mr-1.5" 
+                                    <span className="w-2 h-2 rounded-full mr-1.5"
                                       style={{ backgroundColor: dotColors[colorName as keyof typeof dotColors] }}
                                     ></span>
                                     {skill}
                                   </span>
-                                  
+
                                   <AnimatePresence>
                                     {activeIndex === index && (
-                                      <motion.div 
+                                      <motion.div
                                         initial={{ opacity: 0, scale: 0.5 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.5 }}
@@ -724,7 +705,7 @@ export default function About({ id }: AboutProps) {
                               );
                             })}
                           </div>
-                          
+
                           {/* GitHub-like contribution animation */}
                           <div className="w-full flex mt-3 pt-3 border-t border-[#30363d] z-10">
                             <div className="flex gap-1">
@@ -737,17 +718,17 @@ export default function About({ id }: AboutProps) {
                                   "#39d353",
                                   "#7ee787"  // highest
                                 ];
-                                
+
                                 return (
-                                  <motion.div 
+                                  <motion.div
                                     key={level}
                                     initial={{ opacity: 0.4 }}
                                     animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ 
-                                      duration: 2, 
-                                      delay: level * 0.3, 
+                                    transition={{
+                                      duration: 2,
+                                      delay: level * 0.3,
                                       repeat: Infinity,
-                                      repeatType: "reverse" 
+                                      repeatType: "reverse"
                                     }}
                                     className="w-2.5 h-2.5 rounded-sm"
                                     style={{ backgroundColor: contribColors[level] }}
@@ -767,7 +748,7 @@ export default function About({ id }: AboutProps) {
                 ))}
               </div>
             </GlassCard>
-            
+
             {/* GitHub repositories section - Only display on mobile iOS/Android */}
             {isMobile && (
               <div className="w-full max-w-[600px] mx-auto md:mx-0">
